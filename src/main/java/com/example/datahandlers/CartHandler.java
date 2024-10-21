@@ -9,7 +9,8 @@ public class CartHandler {
     private Connection connection;
 
     public CartHandler(String dbFilePath) throws SQLException {
-        connection = DriverManager.getConnection("jdbc:sqlite:" + dbFilePath);
+        // Add busy_timeout parameter to the connection URL
+        connection = DriverManager.getConnection("jdbc:sqlite:" + dbFilePath + "?busy_timeout=30000");
         createCartTable();
     }
 
@@ -32,7 +33,7 @@ public class CartHandler {
     }
 
     // Method to remove a product from the cart
-    public synchronized synchronized void removeProduct(int entry_id) throws SQLException {
+    public synchronized void removeProduct(int entry_id) throws SQLException {
         String sql = "DELETE FROM cart WHERE entry_id = ?";
         PreparedStatement pstmt = connection.prepareStatement(sql);
         pstmt.setInt(1, entry_id);

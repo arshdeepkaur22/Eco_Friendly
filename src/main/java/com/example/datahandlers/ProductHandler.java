@@ -7,7 +7,8 @@ public class ProductHandler {
     private Connection connection;
 
     public ProductHandler(String dbFilePath) throws SQLException {
-        connection = DriverManager.getConnection("jdbc:sqlite:" + dbFilePath);
+        // Add busy_timeout parameter to the connection URL
+        connection = DriverManager.getConnection("jdbc:sqlite:" + dbFilePath + "?busy_timeout=30000");
         createProductTable();
     }
 

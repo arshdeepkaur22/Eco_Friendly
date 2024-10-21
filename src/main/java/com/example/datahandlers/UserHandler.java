@@ -10,9 +10,9 @@ import com.example.utils.Tools;
 public class UserHandler {
     private Connection connection;
 
-    public UserHandler(String dbFileName) throws SQLException {
-        // Initialize the SQLite database connection
-        this.connection = DriverManager.getConnection("jdbc:sqlite:" + dbFileName);
+    public UserHandler(String dbFilePath) throws SQLException {
+        // Add busy_timeout parameter to the connection URL
+        connection = DriverManager.getConnection("jdbc:sqlite:" + dbFilePath + "?busy_timeout=30000");
         createUserTable();
     }
 
