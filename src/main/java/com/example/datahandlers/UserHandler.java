@@ -16,7 +16,7 @@ public class UserHandler {
         createUserTable();
     }
 
-    private void createUserTable() throws SQLException {
+    private synchronized void createUserTable() throws SQLException {
         // Create the user table if it doesn't exist
         String createTableSQL = "CREATE TABLE IF NOT EXISTS user (" +
                 "user_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -28,12 +28,13 @@ public class UserHandler {
         }
     }
 
-    public void new_user(String name, String email, String password) throws SQLException {
+    public synchronized void new_user(String name, String email, String password) throws SQLException {
         // Insert a new user into the database
-        String insertSQL = "INSERT INTO user (name, email, password) VALUES (?, ?)";
+        String insertSQL = "INSERT INTO user (name, email, password) VALUES (?, ?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(insertSQL)) {
             pstmt.setString(1, name);
-            pstmt.setString(2, password);
+            pstmt.setString(2, email);
+            pstmt.setString(3, password);
             pstmt.executeUpdate();
             Tools.print("User added " + name + " " + email + " " + password);
         }
@@ -103,7 +104,7 @@ public class UserHandler {
         return usersList;
     }
 
-    public void delete_user(int userId) throws SQLException {
+    public synchronized void delete_user(int userId) throws SQLException {
         // Delete a user by user_id
         String deleteSQL = "DELETE FROM user WHERE user_id = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(deleteSQL)) {
@@ -113,7 +114,7 @@ public class UserHandler {
         }
     }
 
-    public void update_user(int userId, String name, String password) throws SQLException {
+    public synchronized void update_user(int userId, String name, String password) throws SQLException {
         // Update user data while keeping previous values if not provided
         StringBuilder updateSQL = new StringBuilder("UPDATE user SET ");
         boolean first = true;
@@ -147,7 +148,7 @@ public class UserHandler {
         }
     }
 
-    public void close() throws SQLException {
+    public synchronized void close() throws SQLException {
         // Close the database connection
         if (connection != null) {
             connection.close();
