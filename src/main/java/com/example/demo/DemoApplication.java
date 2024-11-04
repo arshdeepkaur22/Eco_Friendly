@@ -9,6 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 public class DemoApplication {
 
 	public static void main(String[] args) {
+		System.out.println("http://localhost:8080/api/greet");
 		SpringApplication.run(DemoApplication.class, args);
 	}
 }

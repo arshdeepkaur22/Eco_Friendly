@@ -54,14 +54,14 @@ public class CartHandler {
     }
 
     // Method to list all products in the cart for a user
-    public List<Map<String, String>> listProducts(String user_id) throws SQLException {
+    public List<Map<String, Object>> listProducts(String user_id) throws SQLException {
         String sql = "SELECT * FROM cart WHERE user_id = ?";
         PreparedStatement pstmt = connection.prepareStatement(sql);
         pstmt.setString(1, user_id);
         ResultSet rs = pstmt.executeQuery();
-        List<Map<String, String>> products = new ArrayList<>();
+        List<Map<String, Object>> products = new ArrayList<>();
         while (rs.next()) {
-            Map<String, String> product = new HashMap<>();
+            Map<String, Object> product = new HashMap<>();
             product.put("entry_id", String.valueOf(rs.getInt("entry_id")));
             product.put("user_id", rs.getString("user_id"));
             product.put("product_id", rs.getString("product_id"));

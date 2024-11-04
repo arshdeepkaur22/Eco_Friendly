@@ -40,9 +40,9 @@ public class UserHandler {
         }
     }
 
-    public Map<String, String> get_user(String field, String value) throws SQLException {
+    public Map<String, Object> get_user(String field, String value) throws SQLException {
         // Retrieve user data using user_id or name
-        Map<String, String> userMap = new HashMap<>();
+        Map<String, Object> userMap = new HashMap<>();
         String selectSQL = "SELECT * FROM user WHERE " + field + " = ? ";
 
         try (PreparedStatement pstmt = connection.prepareStatement(selectSQL)) {
@@ -60,8 +60,8 @@ public class UserHandler {
 
     public String getEmail(String id) throws SQLException {
         try {
-            Map<String, String> value = get_user("user_id", id);
-            return value.get("email");
+            Map<String, Object> value = get_user("user_id", id);
+            return (String) value.get("email");
         } catch (Exception e) {
             return "";
         }
@@ -69,8 +69,8 @@ public class UserHandler {
 
     public String getId(String email) throws SQLException {
         try {
-            Map<String, String> value = get_user("email", email);
-            return value.get("user_id");
+            Map<String, Object> value = get_user("email", email);
+            return (String) value.get("user_id");
         } catch (Exception e) {
             return "";
         }
@@ -78,8 +78,8 @@ public class UserHandler {
 
     public String getName(String id) throws SQLException {
         try {
-            Map<String, String> value = get_user("user_id", id);
-            return value.get("name");
+            Map<String, Object> value = get_user("user_id", id);
+            return (String) value.get("name");
         } catch (Exception e) {
             return "";
         }
