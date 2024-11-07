@@ -15,58 +15,133 @@ import java.util.Collections;
 @RequestMapping("/api")
 public class Controller {
 
-    UserHandler userHandler;
-    ProductHandler productHandler;
-    CartHandler cartHandler;
+    // Data handlers
+    private final UserHandler userHandler;
+    private final ProductHandler productHandler;
+    private final CartHandler cartHandler;
 
-    Controller() {
+    // Constructor for initializing handlers
+    public Controller() {
+        userHandler = initializeUserHandler();
+        productHandler = initializeProductHandler();
+        cartHandler = initializeCartHandler();
+    }
+
+    // Private helper methods to initialize handlers
+    private UserHandler initializeUserHandler() {
         try {
-            userHandler = new UserHandler("database.db");
-            productHandler = new ProductHandler("database.db");
-            cartHandler = new CartHandler("database.db");
+            return new UserHandler("database.db");
         } catch (Exception e) {
-            System.out.println(e.toString());
+            System.out.println("Error initializing UserHandler: " + e.toString());
+            return null;
         }
     }
 
-    // GET route
+    private ProductHandler initializeProductHandler() {
+        try {
+            return new ProductHandler("database.db");
+        } catch (Exception e) {
+            System.out.println("Error initializing ProductHandler: " + e.toString());
+            return null;
+        }
+    }
+
+    private CartHandler initializeCartHandler() {
+        try {
+            return new CartHandler("database.db");
+        } catch (Exception e) {
+            System.out.println("Error initializing CartHandler: " + e.toString());
+            return null;
+        }
+    }
+
+    // =======================
+    // Public API Endpoints
+    // =======================
+
+    // Greet route
     @GetMapping("/greet")
     public String greet() {
         return "Hello, Welcome to Spring Boot!";
     }
 
-    // Allowed types
-    @GetMapping("/profile/{type}/{value}")
-    public Map<String, Object> getProfile(@PathVariable String type, @PathVariable String value) {
+    @GetMapping("/profile/{field}/{value}")
+    public Map<String, Object> getProfile(@PathVariable String field, @PathVariable String value) {
         try {
-            return userHandler.get_user(type, value);
+            return userHandler.get_user(field, value);
         } catch (Exception e) {
-            System.out.println(e.toString());
+            System.out.println("Error fetching profile: " + e.toString());
             return Collections.emptyMap();
         }
     }
 
-    // get all products
+    // POST route to create a new user
+    @PostMapping("/createUser")
+    public String createUser(@RequestBody Map<String, String> userData) {
+        try {
+            String name = userData.get("name");
+            String email = userData.get("email");
+            String password = userData.get("password");
+
+            userHandler.new_user(name, email, password);
+            return "User created successfully!";
+        } catch (Exception e) {
+            return "Error creating user: " + e.getMessage();
+        }
+    }
+
+    // DELETE route to delete a user by ID
+    @DeleteMapping("/deleteUser/{id}")
+    public String deleteUser(@PathVariable int id) {
+        try {
+            userHandler.delete_user(id);
+            return "User with ID " + id + " deleted successfully!";
+        } catch (Exception e) {
+            return "Error deleting user: " + e.getMessage();
+        }
+    }
+
+    // PUT route to update user data
+    @PutMapping("/updateUser/{id}")
+    public String updateUser(@PathVariable int id, @RequestBody Map<String, String> updatedData) {
+        try {
+            String name = updatedData.get("name");
+            String password = updatedData.get("password");
+
+            userHandler.update_user(id, name, password);
+            return "User with ID " + id + " updated successfully!";
+        } catch (Exception e) {
+            return "Error updating user: " + e.getMessage();
+        }
+    }
+
+    // Get all products
     @GetMapping("/allProducts")
     public List<Map<String, Object>> allProducts() {
         try {
             return productHandler.getAllProducts();
         } catch (Exception e) {
+            System.out.println("Error fetching products: " + e.toString());
             return Collections.emptyList();
         }
     }
 
-    // get cart items via id
+    // Get cart items by user id
     @GetMapping("/cart/{id}")
     public List<Map<String, Object>> getCart(@PathVariable String id) {
         try {
             return cartHandler.listProducts(id);
         } catch (Exception e) {
+            System.out.println("Error fetching cart: " + e.toString());
             return Collections.emptyList();
         }
     }
 
-    // POST route for form data
+    // =======================
+    // POST, PUT, DELETE Routes
+    // =======================
+
+    // POST route for form data submission
     @PostMapping("/submitForm")
     public String submitForm(@RequestBody Map<String, String> formData) {
         String name = formData.get("name");
@@ -74,15 +149,4 @@ public class Controller {
         return "Form submitted: Name = " + name + ", Email = " + email;
     }
 
-    // PUT route for updating data
-    @PutMapping("/updateUser/{id}")
-    public String updateUser(@PathVariable int id, @RequestBody Map<String, String> updatedData) {
-        return "User with ID " + id + " updated: " + updatedData;
-    }
-
-    // DELETE route for deleting user
-    @DeleteMapping("/deleteUser/{id}")
-    public String deleteUser(@PathVariable int id) {
-        return "User with ID " + id + " deleted!";
-    }
 }

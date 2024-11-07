@@ -40,7 +40,7 @@ public class DemoApplication {
 			CartHandler cartHandler = new CartHandler(database);
 			ProductHandler productHandler = new ProductHandler(database);
 
-			List<String> xlSheets = new ArrayList();
+			ArrayList<String> xlSheets = new ArrayList<String>();
 			xlSheets.add("cart.xlsx");
 			xlSheets.add("products.xlsx");
 			xlSheets.add("user.xlsx");
