@@ -126,11 +126,39 @@ public class Controller {
         }
     }
 
-    // Get cart items by user id
-    @GetMapping("/cart/{id}")
-    public List<Map<String, Object>> getCart(@PathVariable String id) {
+    // =======================
+    // POST, PUT, DELETE Routes
+    // =======================
+
+    // Add a product to the cart for a specific user
+    @PostMapping("/cart/add")
+    public String addProductToCart(@RequestBody Map<String, String> data) {
         try {
-            return cartHandler.listProducts(id);
+            String userId = data.get("user_id");
+            String productId = data.get("product_id");
+            cartHandler.addProduct(userId, productId);
+            return "Product added to cart successfully!";
+        } catch (Exception e) {
+            return "Error adding product to cart: " + e.getMessage();
+        }
+    }
+
+    // Remove a product from the cart by entry_id
+    @DeleteMapping("/cart/remove/{entry_id}")
+    public String removeProductFromCart(@PathVariable int entry_id) {
+        try {
+            cartHandler.removeProduct(entry_id);
+            return "Product removed from cart successfully!";
+        } catch (Exception e) {
+            return "Error removing product from cart: " + e.getMessage();
+        }
+    }
+
+    // Get all cart items for a user
+    @GetMapping("/cart/{user_id}")
+    public List<Map<String, Object>> getCart(@PathVariable String user_id) {
+        try {
+            return cartHandler.listProducts(user_id);
         } catch (Exception e) {
             System.out.println("Error fetching cart: " + e.toString());
             return Collections.emptyList();
@@ -141,12 +169,10 @@ public class Controller {
     // POST, PUT, DELETE Routes
     // =======================
 
-    // POST route for form data submission
     @PostMapping("/submitForm")
     public String submitForm(@RequestBody Map<String, String> formData) {
         String name = formData.get("name");
         String email = formData.get("email");
         return "Form submitted: Name = " + name + ", Email = " + email;
     }
-
 }
