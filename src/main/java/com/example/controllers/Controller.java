@@ -131,11 +131,9 @@ public class Controller {
     // =======================
 
     // Add a product to the cart for a specific user
-    @PostMapping("/cart/add")
-    public String addProductToCart(@RequestBody Map<String, String> data) {
+    @PostMapping("/cart/add/{userId}/{productId}")
+    public String addProductToCart(@PathVariable String userId, @PathVariable String productId) {
         try {
-            String userId = data.get("user_id");
-            String productId = data.get("product_id");
             cartHandler.addProduct(userId, productId);
             return "Product added to cart successfully!";
         } catch (Exception e) {
@@ -162,6 +160,19 @@ public class Controller {
         } catch (Exception e) {
             System.out.println("Error fetching cart: " + e.toString());
             return Collections.emptyList();
+        }
+    }
+
+    @PostMapping("/product/add")
+    public void addProduct(@RequestBody Map<String, Object> formData) {
+        String name = (String) formData.get("name");
+        double price = (double) formData.get("price");
+        String description = (String) formData.get("description");
+        double CarbonEmission = (double) formData.get("CarbonEmissoin");
+        try {
+            productHandler.addProduct(name, price, description, CarbonEmission);
+        } catch (Exception e) {
+            System.out.println("Error adding product");
         }
     }
 
